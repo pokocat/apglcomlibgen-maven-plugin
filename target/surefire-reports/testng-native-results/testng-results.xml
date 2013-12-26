@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testng-results skipped="0" failed="0" total="0" passed="0">
+<testng-results skipped="0" failed="0" total="1" passed="1">
   <reporter-output>
   </reporter-output>
-  <suite name="Command line suite" duration-ms="5" started-at="2013-12-24T06:36:50Z" finished-at="2013-12-24T06:36:50Z">
+  <suite name="Command line suite" duration-ms="30" started-at="2013-12-26T07:06:34Z" finished-at="2013-12-26T07:06:34Z">
     <groups>
     </groups>
-    <test name="Command line test" duration-ms="5" started-at="2013-12-24T06:36:50Z" finished-at="2013-12-24T06:36:50Z">
+    <test name="Command line test" duration-ms="30" started-at="2013-12-26T07:06:34Z" finished-at="2013-12-26T07:06:34Z">
+      <class name="com.ericsson.jcat.ComLibGeneratorTest">
+        <test-method status="PASS" signature="f()[pri:0, instance:com.ericsson.jcat.ComLibGeneratorTest@676bd8ea]" name="f" duration-ms="14" started-at="2013-12-26T15:06:34Z" finished-at="2013-12-26T15:06:34Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- f -->
+      </class> <!-- com.ericsson.jcat.ComLibGeneratorTest -->
     </test> <!-- Command line test -->
   </suite> <!-- Command line suite -->
 </testng-results>
