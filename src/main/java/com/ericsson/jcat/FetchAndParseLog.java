@@ -22,22 +22,20 @@ public class FetchAndParseLog {
 	 * File can't be read exit code = {@value}
 	 */
 	private static final int FILE_CANNOT_READ_EXIT_CODE = -2;
-	// TODO log dir should be configure in pom or somewhere else
-	private String LOG_DIR = System.getProperty("user.dir") + "\\src\\test\\resources\\putty219_o.log";
-
+	
 	private Logger logger = Logger.getLogger(this.getClass());
 
-	public List<ComRecord> fetchAndParseLog() {
+	public List<ComRecord> fetchAndParseLog(String apgLinuxLogFile) {
 		logger.info("Fetching logs now...");
-		File logFile = new File(LOG_DIR);
+		File logFile = new File(apgLinuxLogFile);
 		if (!logFile.exists()) {
-			logger.error("Log file not found!!! Check at: " + LOG_DIR);
+			logger.error("Log file not found!!! Check at: " + apgLinuxLogFile);
 			System.exit(FILE_NOT_FOUND_EXIT_CODE);
 		} else if (!logFile.canRead()) {
-			logger.error("Log file can't be read! Please check at: " + LOG_DIR);
+			logger.error("Log file can't be read! Please check at: " + apgLinuxLogFile);
 			System.exit(FILE_CANNOT_READ_EXIT_CODE);
 		}
-		logger.info("gonna fetch log from : " + LOG_DIR);
+		logger.info("gonna fetch log from : " + apgLinuxLogFile);
 
 		logger.info(logFile.getName() + " is recently modified at : "
 				+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(logFile.lastModified()));
@@ -52,6 +50,11 @@ public class FetchAndParseLog {
 		return mComClass;
 	}
 
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public List<ComRecord> readFileByLines(File file) {
 		List<ComRecord> showList = new ArrayList<ComRecord>();
 		BufferedReader reader = null;

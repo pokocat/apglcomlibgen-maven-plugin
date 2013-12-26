@@ -29,22 +29,28 @@ import java.io.IOException;
  */
 public abstract class AbstractPluginMojo extends AbstractMojo {
 	/**
-	 * The output directory of which java files into.
+	 * The output directory to put automatically generated source files to
 	 * 
-	 * @parameter default-value="${project.build.outputDirectory}"
+	 * @parameter default-value="src/main/java"
 	 * @required
 	 */
-	private String outputDirectory;
+	protected String commonLibClassesSourceFolder;
 
 	/**
-	 * Get the outputDirectory
+	 * Package Common Lib Classes
 	 * 
-	 * @return
+	 * @parameter default-value="com.ericsson.apgl.common."
+	 * @required
 	 */
-	public String getOutputDirectory() {
-		return outputDirectory;
-	}
+	protected String commonLibPackage;
 
+	/**
+	 * The origin log file of APG Linux.
+	 * 
+	 * @parameter default-value="\src\test\resources\putty219_o.log"
+	 * @required
+	 */
+	protected String apgLinuxLogFile;
 	/**
 	 * @parameter default-value="${project}"
 	 * @required

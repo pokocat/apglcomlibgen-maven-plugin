@@ -28,10 +28,12 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 /**
+ * To automatically generate Apg Linux common Library for test case use
+ * 
  * @goal generate
  * @phase install
  * 
- * @author eduowan
+ * @author eduowan 2013-12-26 First implement
  * 
  */
 public class ComLibGenerator extends AbstractPluginMojo {
@@ -39,22 +41,6 @@ public class ComLibGenerator extends AbstractPluginMojo {
 	 * Path separator used to construct class path {@value}
 	 */
 	private static final String PATH_SEPARATOR = System.getProperty("path.separator");
-
-	/**
-	 * Source folder to put automatically generated source to
-	 * 
-	 * @parameter default-value="src/main/java"
-	 * @required
-	 */
-	private String commonLibClassesSourceFolder;
-
-	/**
-	 * Package Common Lib Classes
-	 * 
-	 * @parameter default-value="com.ericsson.apgl.common."
-	 * @required
-	 */
-	private String commonLibPackage;
 
 	private Logger mLogger = Logger.getLogger(this.getClass());
 
@@ -200,9 +186,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
 		mDestDir = new File(commonLibClassesSourceFolder);
-		if (!mDestDir.canWrite()) {
-			throw new IllegalStateException("Source folder: " + mDestDir + " can't be read!");
-		} else if (!mDestDir.exists()) {
+		if (!mDestDir.exists()) {
 			try {
 				if (!mDestDir.mkdirs()) {
 					throw new IllegalStateException("Source folder " + mDestDir + " can't be created, please check!");
@@ -213,7 +197,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 		}
 
 		mLogger.info("Common Library generator Mojo start.");
-		List<ComRecord> classList = new FetchAndParseLog().fetchAndParseLog();
+		List<ComRecord> classList = new FetchAndParseLog().fetchAndParseLog(apgLinuxLogFile);
 
 		try {
 			genClasses(classList);
@@ -227,11 +211,5 @@ public class ComLibGenerator extends AbstractPluginMojo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public static void main(String args[]) throws MojoExecutionException, MojoFailureException {
-		ComLibGenerator clg = new ComLibGenerator();
-
-		clg.execute();
 	}
 }
