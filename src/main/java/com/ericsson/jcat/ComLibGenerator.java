@@ -3,10 +3,8 @@ package com.ericsson.jcat;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -21,7 +19,6 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JDocComment;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JFieldRef;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
@@ -42,7 +39,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 	 */
 	private static final String PATH_SEPARATOR = System.getProperty("path.separator");
 
-	private Logger mLogger = Logger.getLogger(this.getClass());
+	private final Logger mLogger = Logger.getLogger(this.getClass());
 
 	private File mDestDir;
 
@@ -55,7 +52,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 
 			codeModel = new JCodeModel();
 			String className = classElement.className;
-			mLogger.debug("Gonna generate:::" + className);
+			mLogger.info("Gonna generate:::" + className);
 
 			JDefinedClass definedClass = codeModel._class(commonLibPackage + className);
 			definedClass._extends(ComLib.class);
@@ -197,7 +194,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 		}
 
 		mLogger.info("Common Library generator Mojo start.");
-		List<ComRecord> classList = new FetchAndParseLog().fetchAndParseLog(apgLinuxLogFile);
+		List<ComRecord> classList = new FetchAndParseLog().fetchAndParseLog();
 
 		try {
 			genClasses(classList);

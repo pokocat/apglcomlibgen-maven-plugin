@@ -8,12 +8,26 @@ import java.util.regex.Pattern;
 import com.ericsson.axe.jcat.exceptions.ap.APsessionException;
 import com.ericsson.axe.jcat.interfaces.IAPsession;
 
+/**
+ * <p>
+ * <b>Description:</b><br />
+ * Template including some command methods.
+ * </p>
+ * 
+ * <p>
+ * <b>Copyright:</b> Copyright (c) 2013
+ * </p>
+ * <p>
+ * <b>Company:</b> Ericsson
+ * </p>
+ * 
+ * @author ezhayix 2013-12-27 initial version
+ * 
+ */
 public class ComLib {
 	protected IAPsession mApCliss;
 	protected String mPath;
 	protected String mPrintoutOfShow;
-
-	// private String mManagedElement;
 
 	public ComLib(IAPsession apCliss) {
 		mApCliss = apCliss;
@@ -33,9 +47,8 @@ public class ComLib {
 		pathInClass = pathArray[0];
 		for (int i = 1; i < pathArray.length; i++) {
 			if (!pathArray[i].contains("=")) {
-				pathArray[i] += "=1";
+				pathInClass += "," + pathArray[i] + "=1";
 			}
-			pathInClass += "," + pathArray[i];
 		}
 		return pathInClass;
 	}
@@ -48,7 +61,6 @@ public class ComLib {
 	protected String getObjectPath(String[] path) throws APsessionException, InterruptedException {
 		String printout;
 		String arguments;
-		// String mManagedElement;
 		String command = "show";
 		Pattern pattern;
 		Matcher matcher;
@@ -56,18 +68,13 @@ public class ComLib {
 			if (path[i].contains("=")) {
 				arguments = path[i];
 			} else {
-				/**
-				 * sometimes the APG43L response slowly, need wait several seconds
-				 */
 				printout = mApCliss.exec(command);
 				pattern = Pattern.compile(path[i] + "=.*($|\n|\\s\n)");
 				matcher = pattern.matcher(printout);
-				// assertTrue("the parameter array's content has some errors!", matcher.find());
 				assertTrue("the parameter array's content has some errors!", matcher.groupCount() == 1);
 				arguments = matcher.group().replace("\n", "").trim();
 			}
 			if (i < 1) {
-				// mManagedElement = arguments;
 				command = command + " " + arguments;
 			} else {
 				command = command + "," + arguments;
@@ -121,5 +128,4 @@ public class ComLib {
 			return null;
 		}
 	}
-
 }
