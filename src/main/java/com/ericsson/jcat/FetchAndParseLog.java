@@ -231,8 +231,9 @@ public class FetchAndParseLog {
 								continue;
 							} else {
 								if (listAll.get(j).type.equals("METHOD")) {
-									list.get(i).attributes.add("Method_" + listAll.get(j).Item + " = "
-											+ listAll.get(j).Item + ";");
+									list.get(i).attributes.add("Method_"
+											+ listAll.get(j).Item.replace("(", "").replace(")", "").trim() + " = \""
+											+ listAll.get(j).Item.replace("(", "").replace(")", "").trim() + "\"");
 								}
 							}
 						}
