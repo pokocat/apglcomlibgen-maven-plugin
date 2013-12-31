@@ -51,4 +51,24 @@
 			<version>3.0-alpha-2</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.ericsson.axe.jcat</groupId>
+				<artifactId>apglcomlibgen-maven-plugin</artifactId>
+				<version>1.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<phase>test</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<apgLinuxLogFile>src\test\resources\putty219.log</apgLinuxLogFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -57,7 +57,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 			JDefinedClass definedClass = codeModel._class(commonLibPackage + className);
 			definedClass._extends(ComLib.class);
 
-			// addCommonClassHeader("", definedClass.name(), definedClass.javadoc());
+			addCommonClassHeader("", definedClass.name(), definedClass.javadoc());
 
 			JFieldVar mPath = definedClass.field(JMod.PUBLIC, codeModel.parseType("String"), "mPath",
 					JExpr.lit(classElement.path));
@@ -71,10 +71,9 @@ public class ComLibGenerator extends AbstractPluginMojo {
 			JBlock classConstructorBody = classConstructor.body();
 
 			classConstructorBody.invoke("super").arg(JExpr.ref("apCliss"));
-			JClass ComLib = codeModel.ref("com.ericsson.jcat.ComLib");
+			classConstructorBody.assign(mPath, JExpr._this().invoke("setPath").arg(mPath));
 			JExpression execStr = JExpr.invoke("getObjectPath").arg(mPath.invoke("split").arg(JExpr.lit(",")));
 
-			mPath.assign(classConstructorBody.invoke("setPath").arg(mPath));
 			mPath.assign(classConstructorBody.invoke(mPath, "replace").arg(className + "=1")
 					.arg(JExpr.lit(className + "=").plus(JExpr.ref("objectname"))));
 
@@ -83,6 +82,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 			JVar printout = classConstructorBody.decl(codeModel.parseType("String"), "printout", JExpr.ref("mApCliss")
 					.invoke("exec").arg("show"));
 
+			JClass ComLib = codeModel.ref("com.ericsson.jcat.ComLib");
 			for (String attrElement : classElement.attributes) {
 				// TODO to judge the variable of ArrayList<String> more efficiently in log parsing phase
 				if (attrElement.contains("ArrayList")) {
@@ -92,8 +92,10 @@ public class ComLibGenerator extends AbstractPluginMojo {
 				JConditional ifCondition = classConstructorBody._if(ComLib.staticInvoke("find").arg(printout)
 						.arg(attrElement));
 				JBlock ifBody = ifCondition._then();
-				ifBody.assign(JExpr._this().ref(attrElement),
-						ComLib.staticInvoke("findAndReturnFirstGroup").arg(printout).arg(attrElement + "=(.*)\n"));
+				ifBody.assign(
+						JExpr._this().ref(attrElement),
+						ComLib.staticInvoke("findAndReturnFirstGroup").arg(printout)
+								.arg(attrElement + "=([a-zA-Z0-9_\"]+)\n"));
 			}
 			printout.assign(JExpr.ref("mApCliss").invoke("exec").arg(""));
 
@@ -110,9 +112,11 @@ public class ComLibGenerator extends AbstractPluginMojo {
 
 			// execWithoutCommit method
 			JMethod execWithoutCommit = definedClass.method(JMod.PUBLIC, codeModel.VOID, "execWithoutCommit");
+
 			execWithoutCommit._throws(codeModel.directClass("com.ericsson.axe.jcat.exceptions.ap.APsessionException"))
 					._throws(codeModel.directClass("InterruptedException"));
 			execWithoutCommit.param(codeModel.ref(String.class), "command");
+			addMethodJavadocs("Execute command without performing a commit", execWithoutCommit.javadoc());
 			execWithoutCommit.body().invoke(JExpr.ref("mApCliss"), "exec").arg(JExpr.ref("command"));
 			// execWithCommit method
 			JMethod execWithCommit = definedClass.method(JMod.PUBLIC, codeModel.VOID, "execWithCommit");
@@ -161,20 +165,27 @@ public class ComLibGenerator extends AbstractPluginMojo {
 		jDocComment.add("<b>DO NOT EDIT! AUTOMATICALLY GENERATED "
 				+ new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "</b>\n");
 		jDocComment.add("</p>\n");
-
 		jDocComment.add("<p>\n");
 		jDocComment.add("<b>Description:</b><br />\n");
-		jDocComment.add(className + " grouping class\n");
+		jDocComment.add(className + "  class\n");
 		jDocComment.add("</p>\n");
-
 		jDocComment.add(headerContent);
+		jDocComment
+				.add("<b>Copyright:</b> Copyright (c) " + new SimpleDateFormat("yyyy").format(new Date()) + "</p>\n");
+		jDocComment.add("<p>company Ericsson</p>\n");
+		jDocComment.add("\n");
+		jDocComment.add("@author ApgLComLibGenerator " + new SimpleDateFormat("yyyy-MM-dd").format(new Date())
+				+ " Automatically generated");
+	}
 
-		jDocComment.add("\n");
-		jDocComment.add("<p>copyright Copyright (c) <\\p>" + new SimpleDateFormat("yyyy").format(new Date()) + "\n");
-		jDocComment.add("<p>company Ericsson<\\p>\n");
-		jDocComment.add("\n");
-		jDocComment.add("@author ApgLComLibGenerator - " + new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-				+ " - Automatically generated\n");
+	/**
+	 * Add method javadoc
+	 * 
+	 * @param comments
+	 * @param jDocComment
+	 */
+	private void addMethodJavadocs(String comments, JDocComment jDocComment) {
+		jDocComment.add(comments);
 	}
 
 	/**
@@ -194,7 +205,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 		}
 
 		mLogger.info("Common Library generator Mojo start.");
-		List<ComRecord> classList = new FetchAndParseLog().fetchAndParseLog();
+		List<ComRecord> classList = new FetchAndParseLog().fetchAndParseLog(apgLinuxLogFile);
 
 		try {
 			genClasses(classList);

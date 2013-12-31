@@ -6,9 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.testng.reporters.ExitCodeListener;
 
 public class FetchAndParseLog {
 
@@ -20,22 +22,20 @@ public class FetchAndParseLog {
 	 * File can't be read exit code = {@value}
 	 */
 	private static final int FILE_CANNOT_READ_EXIT_CODE = -2;
-	// TODO log dir should be configure in pom or somewhere else
-	private final String LOG_DIR = System.getProperty("user.dir") + "\\src\\test\\resources\\putty219.log";
+	
+	private Logger logger = Logger.getLogger(this.getClass());
 
-	private final Logger logger = Logger.getLogger(this.getClass());
-
-	public List<ComRecord> fetchAndParseLog() {
-		logger.info("Fetching logs now ...");
-		File logFile = new File(LOG_DIR);
+	public List<ComRecord> fetchAndParseLog(String apgLinuxLogFile) {
+		logger.info("Fetching logs now...");
+		File logFile = new File(apgLinuxLogFile);
 		if (!logFile.exists()) {
-			logger.error("Log file not found!!! Check at: " + LOG_DIR);
+			logger.error("Log file not found!!! Check at: " + apgLinuxLogFile);
 			System.exit(FILE_NOT_FOUND_EXIT_CODE);
 		} else if (!logFile.canRead()) {
-			logger.error("Log file can't be read! Please check at: " + LOG_DIR);
+			logger.error("Log file can't be read! Please check at: " + apgLinuxLogFile);
 			System.exit(FILE_CANNOT_READ_EXIT_CODE);
 		}
-		logger.info("gonna fetch log from : " + LOG_DIR);
+		logger.info("gonna fetch log from : " + apgLinuxLogFile);
 
 		logger.info(logFile.getName() + " is recently modified at : "
 				+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(logFile.lastModified()));
@@ -44,24 +44,18 @@ public class FetchAndParseLog {
 
 		mCom = readFileByLines(logFile);
 
-		// List<ComRecord> mComClass =
-		// addClassName(addAttributes(addAbsolutePath(addSubclass(filterRepeatedClass(mCom))),mCom));
-		List<ComRecord> mComClass = addClassName(addAttributes(
-				addSubclass((filterRepeatedClass(addAbsolutePath(onlyClass(mCom))))), mCom));
+		List<ComRecord> mComClass = addClassName(addAttributes(addAbsolutePath(addSubclass(filterRepeatedClass(mCom))),
+				mCom));
+		
+
 		return mComClass;
 	}
 
-	public List<ComRecord> onlyClass(List<ComRecord> com) {
-		List<ComRecord> comClass = new ArrayList<ComRecord>();
-		for (int i = 0; i < com.size(); i++) {
-			if (com.get(i).type.equals("CLASS")) {
-				// System.out.println("THE METHOD IS " + mCom.get(i).Item);
-				comClass.add(com.get(i));
-			}
-		}
-		return comClass;
-	}
-
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public List<ComRecord> readFileByLines(File file) {
 		List<ComRecord> showList = new ArrayList<ComRecord>();
 		BufferedReader reader = null;
@@ -224,21 +218,16 @@ public class FetchAndParseLog {
 						} else {
 							if (listAll.get(j).type.equals("RECORD")) {
 								list.get(i).attributes.add(listAll.get(j).Item + " = new ArrayList<String>();");
-								j++;
-								while (listAll.get(j).blank == list.get(i).blank + 6 && j < listAll.size() - 1) {
-									j++;
-								}
-								continue;
 							} else {
 								if (listAll.get(j).type.equals("METHOD")) {
-									list.get(i).attributes.add("Method_"
-											+ listAll.get(j).Item.replace("(", "").replace(")", "").trim() + " = \""
-											+ listAll.get(j).Item.replace("(", "").replace(")", "").trim() + "\"");
+									list.get(i).attributes.add("Method_" + listAll.get(j).Item + " = "
+											+ listAll.get(j).Item + ";");
 								}
 							}
 						}
 						j++;
 					}
+					break;
 				}
 			}
 		}
@@ -281,7 +270,7 @@ public class FetchAndParseLog {
 	 * @param classList
 	 * @return
 	 */
-	public List<ComRecord> addClassName(List<ComRecord> classList) {
+	public static List<ComRecord> addClassName(List<ComRecord> classList) {
 		boolean findSameClass;
 		for (int i = 0; i < classList.size(); i++) {
 			findSameClass = false;
@@ -292,7 +281,7 @@ public class FetchAndParseLog {
 				}
 			}
 			if (findSameClass) {
-				classList.get(i).className = classList.get(i).Item + "_"
+				classList.get(i).className = classList.get(i).Item + "-"
 						+ classList.get(i).path.split(",")[classList.get(i).path.split(",").length - 2];
 			} else {
 				classList.get(i).className = classList.get(i).Item;
