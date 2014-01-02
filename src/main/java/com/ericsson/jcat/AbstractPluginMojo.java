@@ -47,7 +47,7 @@ public abstract class AbstractPluginMojo extends AbstractMojo {
 	/**
 	 * The origin log file of APG Linux.
 	 * 
-	 * @parameter default-value="\src\test\resources\putty219_o.log"
+	 * @parameter default-value="src\test\resources\putty219_o.log"
 	 * @required
 	 */
 	protected String apgLinuxLogFile;

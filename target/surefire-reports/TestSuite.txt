@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: TestSuite
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.803 sec <<< FAILURE!
+f(com.ericsson.jcat.NewTest)  Time elapsed: 1.132 sec  <<< FAILURE!
+java.lang.IllegalArgumentException: trying to create the same field twice: nicInfo = new ArrayList<String>();
+	at com.sun.codemodel.JDefinedClass.field(JDefinedClass.java:425)
+	at com.sun.codemodel.JDefinedClass.field(JDefinedClass.java:396)
+	at com.ericsson.jcat.ComLibGenerator.addAttributes(ComLibGenerator.java:146)
+	at com.ericsson.jcat.ComLibGenerator.genClasses(ComLibGenerator.java:65)
+	at com.ericsson.jcat.ComLibGenerator.execute(ComLibGenerator.java:211)
+	at com.ericsson.jcat.NewTest.f(NewTest.java:17)
