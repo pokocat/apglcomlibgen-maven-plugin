@@ -2,6 +2,8 @@ package com.ericsson.jcat;
 
 import static org.testng.AssertJUnit.assertTrue;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,6 +128,23 @@ public class ComLib {
 			return matcher.group(1);
 		} else {
 			return null;
+		}
+	}
+
+	protected void setRecordContent(IAPsession apSession, ArrayList<String> recordName, Class clazz)
+			throws APsessionException, InterruptedException {
+		String cmd = "";
+		Field[] fields = clazz.getClass().getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i].getType().getSimpleName().contains("ArrayList")) {
+				cmd = fields[i].getName();
+			}
+		}
+
+		String printout = apSession.exec("show " + cmd);
+		String[] pr = printout.split("\n");
+		for (int i = 1; i < pr.length; i++) {
+			recordName.add(pr[i].trim());
 		}
 	}
 }

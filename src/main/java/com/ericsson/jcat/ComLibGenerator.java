@@ -71,6 +71,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 			JBlock classConstructorBody = classConstructor.body();
 
 			classConstructorBody.invoke("super").arg(JExpr.ref("apCliss"));
+			classConstructorBody.invoke(JExpr.ref("apCliss"), "exec").arg("top");
 			classConstructorBody.assign(mPath, JExpr._this().invoke("setPath").arg(mPath));
 			JExpression execStr = JExpr.invoke("getObjectPath").arg(mPath.invoke("split").arg(JExpr.lit(",")));
 
@@ -86,6 +87,8 @@ public class ComLibGenerator extends AbstractPluginMojo {
 			for (String attrElement : classElement.attributes) {
 				// TODO to judge the variable of ArrayList<String> more efficiently in log parsing phase
 				if (attrElement.contains("ArrayList")) {
+					classConstructorBody.invoke("setRecordContent").arg(JExpr.ref("mApCliss"))
+							.arg(JExpr.ref(attrElement.split(" ")[0])).arg(JExpr._this().invoke("getClass"));
 					continue;
 				}
 				attrElement = attrElement.split("=")[0];
