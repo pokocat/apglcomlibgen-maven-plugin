@@ -88,7 +88,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 				// TODO to judge the variable of ArrayList<String> more efficiently in log parsing phase
 				if (attrElement.contains("ArrayList")) {
 					classConstructorBody.invoke("setRecordContent").arg(JExpr.ref("mApCliss"))
-							.arg(JExpr.ref(attrElement.split(" ")[0])).arg(JExpr._this().invoke("getClass"));
+							.arg(JExpr.ref(attrElement.split(" ")[0])).arg(attrElement.split(" ")[0]);
 					continue;
 				}
 				attrElement = attrElement.split("=")[0];
