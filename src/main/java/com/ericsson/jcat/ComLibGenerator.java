@@ -22,6 +22,7 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
+import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 
 /**
@@ -52,7 +53,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 
 			codeModel = new JCodeModel();
 			String className = classElement.className;
-			mLogger.info("Gonna generate:::" + className);
+			mLogger.debug("Gonna generate:::" + className);
 
 			JDefinedClass definedClass = codeModel._class(commonLibPackage + className);
 			definedClass._extends(ComLib.class);
@@ -114,20 +115,25 @@ public class ComLibGenerator extends AbstractPluginMojo {
 			// end of Constructor
 
 			// execWithoutCommit method
-			JMethod execWithoutCommit = definedClass.method(JMod.PUBLIC, codeModel.VOID, "execWithoutCommit");
+			JMethod execWithoutCommitMethod = definedClass.method(JMod.PUBLIC, codeModel.VOID, "execWithoutCommit");
 
-			execWithoutCommit._throws(codeModel.directClass("com.ericsson.axe.jcat.exceptions.ap.APsessionException"))
-					._throws(codeModel.directClass("InterruptedException"));
-			execWithoutCommit.param(codeModel.ref(String.class), "command");
-			addMethodJavadocs("Execute command without performing a commit", execWithoutCommit.javadoc());
-			execWithoutCommit.body().invoke(JExpr.ref("mApCliss"), "exec").arg(JExpr.ref("command"));
+			execWithoutCommitMethod._throws(
+					codeModel.directClass("com.ericsson.axe.jcat.exceptions.ap.APsessionException"))._throws(
+					codeModel.directClass("InterruptedException"));
+			execWithoutCommitMethod.param(codeModel.ref(String.class), "command");
+			addMethodJavadocs("Execute command without performing a commit", execWithoutCommitMethod.listParams(),
+					execWithoutCommitMethod.listParamTypes(), execWithoutCommitMethod.javadoc());
+			execWithoutCommitMethod.body().invoke(JExpr.ref("mApCliss"), "exec").arg(JExpr.ref("command"));
 			// execWithCommit method
-			JMethod execWithCommit = definedClass.method(JMod.PUBLIC, codeModel.VOID, "execWithCommit");
-			execWithCommit._throws(codeModel.directClass("com.ericsson.axe.jcat.exceptions.ap.APsessionException"))
-					._throws(codeModel.directClass("InterruptedException"));
-			execWithCommit.param(codeModel.ref(String.class), "command");
-			execWithCommit.body().invoke(JExpr.ref("mApCliss"), "exec").arg(JExpr.ref("command"));
-			execWithCommit.body().invoke(JExpr.ref("mApCliss"), "exec").arg("commit");
+			JMethod execWithCommitMethod = definedClass.method(JMod.PUBLIC, codeModel.VOID, "execWithCommit");
+			execWithCommitMethod._throws(
+					codeModel.directClass("com.ericsson.axe.jcat.exceptions.ap.APsessionException"))._throws(
+					codeModel.directClass("InterruptedException"));
+			execWithCommitMethod.param(codeModel.ref(String.class), "command");
+			execWithCommitMethod.body().invoke(JExpr.ref("mApCliss"), "exec").arg(JExpr.ref("command"));
+			execWithCommitMethod.body().invoke(JExpr.ref("mApCliss"), "exec").arg("commit");
+			addMethodJavadocs("Execute command with performing a commit action.", execWithCommitMethod.listParams(),
+					execWithCommitMethod.listParamTypes(), execWithCommitMethod.javadoc());
 			// build Class
 			codeModel.build(mDestDir);
 		}
@@ -187,8 +193,15 @@ public class ComLibGenerator extends AbstractPluginMojo {
 	 * @param comments
 	 * @param jDocComment
 	 */
-	private void addMethodJavadocs(String comments, JDocComment jDocComment) {
+	private void addMethodJavadocs(String comments, JVar[] jVars, JType[] jTypes, JDocComment jDocComment) {
 		jDocComment.add(comments);
+		if (jVars.length != jTypes.length) {
+			mLogger.info("Number of parameters and its types not align! Use number of parameters.");
+		}
+		int paramNum = jVars.length;
+		for (int i = 0; i < paramNum; i++) {
+			jDocComment.addParam(jVars[i]).append(" - ").append(jTypes[i]);
+		}
 	}
 
 	/**
