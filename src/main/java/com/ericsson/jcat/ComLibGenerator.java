@@ -99,7 +99,7 @@ public class ComLibGenerator extends AbstractPluginMojo {
 				ifBody.assign(
 						JExpr._this().ref(attrElement),
 						ComLib.staticInvoke("findAndReturnFirstGroup").arg(printout)
-								.arg(attrElement + "=([a-zA-Z0-9_\"]+)\n"));
+								.arg((attrElement + "=(.+?)\n")).invoke("replace").arg("\"").arg(""));
 			}
 			printout.assign(JExpr.ref("mApCliss").invoke("exec").arg(""));
 
