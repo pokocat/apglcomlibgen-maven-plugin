@@ -10,21 +10,54 @@ public class ComRecordForXml {
 	// int blank;
 	public String path;
 	String className;
+	public String mimName;
+	public String parMimName;
 	public String parent;
-	public List<String> attributes = new ArrayList<String>();
-	List<String> subclass = new ArrayList<String>();
+	public int cardnalityMin = -1;
+	public int cardnalityMax = -1;
+	public List<AttributeInfo> attributes = new ArrayList<AttributeInfo>();
+	public List<ClassInfo> childClass = new ArrayList<ClassInfo>();
+	public List<ClassInfo> absolutePath;
+	public List<ActionInfo> actions = new ArrayList<ActionInfo>();
 
-	public ComRecordForXml(String a, String b, String e) {
-		Item = a;
-		type = b;
-		path = e;
+	public ComRecordForXml(String classname, String type, String path) {
+		Item = classname;
+		type = type;
+		path = path;
 	}
 
-	public void addAttributes(List<String> attr) {
+	public ComRecordForXml(String classname, String type, String path, String mimname) {
+		Item = classname;
+		type = type;
+		path = path;
+		mimName = mimname;
+		ClassInfo defaultClassInfo = new ClassInfo(classname, mimname);
+		absolutePath = new ArrayList<ClassInfo>();
+		absolutePath.add(defaultClassInfo);
+	}
+
+	public void addAttributes(List<AttributeInfo> attr) {
 		attributes = attr;
 	}
 
 	public void addParent(String par) {
 		parent = par;
 	}
+
+	public void addChild(ClassInfo child) {
+		childClass.add(child);
+	}
+
+	public void addParMim(String parmim) {
+		parMimName = parmim;
+	}
+
+	public void addMin(int min) {
+		cardnalityMin = min;
+	}
+
+	public void addMax(int max) {
+		cardnalityMax = max;
+	}
+
 }
